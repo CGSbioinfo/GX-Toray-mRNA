@@ -1,0 +1,5 @@
+Chip	Cell	ID				
+QH45L10	1	hIPSCs				
+QH45L11	1	Control				
+QH45L13	1	sample_3				
+QH45L14	1	Bio
