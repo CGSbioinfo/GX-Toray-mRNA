@@ -1,0 +1,138 @@
+\documentclass{article}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{caption}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true, linktoc=all,linkcolor=black}
+\usepackage{color}   %May be necessary if you want to color links
+\usepackage{tikz,hyperref}
+\usepackage{ragged2e}
+\usepackage[margin=0.8in]{geometry}
+\usepackage{lmodern}
+\renewcommand*\familydefault{\sfdefault}
+\usepackage[T1]{fontenc}
+\usepackage{fancyhdr}
+\setlength\footskip{40pt} 
+\pagestyle{fancy}
+
+
+
+\renewcommand{\headrulewidth}{2pt}
+\renewcommand{\headrule}{\hbox to \headwidth{\color{BurntOrange}\leaders\hrule height \headrulewidth\hfill}}
+\renewcommand{\footrulewidth}{0.5pt}
+
+
+\fancyfoot[R]{ % right
+   \includegraphics[scale=0.2]{CGS_logo_final.jpg}
+}
+\fancyfoot[L]{ % left
+   \includegraphics[scale=0.2]{UNI_logo.jpg}
+}
+
+\title{\color{BurntOrange}{\textbf{Microarray Gene Expression Report}}}
+\author{\includegraphics[scale=0.4]{CGS_logo_final.jpg}}
+\color{black}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+
+\title{\color{BurntOrange}{\textbf{Toray Array Data quality Report}}}
+\author{\includegraphics[scale=0.4]{CGS_logo_final.jpg}}
+\color{black}
+        
+\maketitle
+
+\tableofcontents
+\hypersetup{linkcolor=blue}
+
+\vspace{1.5cm}
+\vspace{1cm}
+<<dirs,echo=FALSE, results='asis'>>=
+library(xtable)
+reportdir='W:/SERVICES/Microarrays/GX-Toray/Toray Free Trial Projects/P.Ovando-roche/Results/'
+maindir="W:/SERVICES/Microarrays/GX-Toray/Toray Free Trial Projects/P.Ovando-roche/Results/"
+setwd(maindir)
+@
+\newpage
+\section{Data}
+Click here to open \href{run:../Data/merged/merged_data.csv}{Background corrected, Normalized, and log transformed data}
+
+\section{Quality Control}
+
+\subsection{Toray QC Reports}
+<<toray_reports,echo=FALSE, results='asis'>>=
+setwd(paste0(maindir,'/TorayQC'))
+target=read.table(paste0(maindir,'/Data/merged/target.txt'), header=T)
+listComp=list.files(full.names=F,recursive = F)
+listComp=listComp[grep('.htm',listComp)]
+for( i in 1:length(listComp)){
+ sample=as.character(target[i,3])
+ sample=gsub('_','\\\\_', sample)
+ chip=as.character(target[i,1])
+ path=listComp[grep(chip,listComp)]
+ cat('\\noindent')
+ cat(paste0("\\href{TorayQC/",path,"}{Click here to open Toray QC report for sample ", sample, "}\n\n", sep=""))
+} 
+@
+
+\subsection{Number of detected probes}
+The next table shows the number of detected probes in each sample. \\
+<<qc,echo=FALSE, results='asis'>>=
+t=read.csv(paste0(maindir,'/QC/nprobes_detected.csv'), row.names=1)
+t=format(t,big.mark = ',')
+xt=xtable(t)
+print(xt)
+@
+
+\subsection{Distribution of data}
+\vspace{0.3cm}
+Figures~\ref{fig:f2} and~\ref{fig:f3} show the distribution of data for each sample.Click on the figures to see them in more detail in a new window.\\\\
+\vspace{0.3cm}
+\begin{minipage}{\linewidth}
+\makebox[\linewidth]{\href{run:QC/boxplot_normData.png}{\includegraphics[keepaspectratio=true, scale=0.4]{QC/boxplot_normData.png}}}
+\captionof{figure}{}
+\label{fig:f2}
+\end{minipage}
+\vspace{0.3cm}
+\begin{minipage}{\linewidth}
+\makebox[\linewidth]{\href{run:QC/density.png}{\includegraphics[keepaspectratio=true, scale=0.4]{QC/density.png}}}
+\captionof{figure}{}
+\label{fig:f3}
+\end{minipage}
+
+\subsection{Sample relationship}
+\label{sec:samplerelationship}
+Next, samples are compared to each other to se their relationship and if this matches the expected clustering by groups. 
+\\\\
+Figure~\ref{fig:f4} plots the sample relations based on hierarchical clustering. Figure~\ref{fig:f5} plots the sample relations based on multidimensional scaling. Both use a subset of probes which correspond to the most variable and whose  standard deviation at least 10\% of the mean. Click on the figures to see them in more detail in a new window.
+\\\\
+Figure~\ref{fig:f6} show scatterplots between samples. In each individual plot, the \textit{x}-axis corresponds to the intensity values from one sample and is compared to the intensity values from the other sample on the \textit{y}-axis. Correlation of intensity values are show under each plot.
+\\\\\\
+
+\begin{minipage}{\linewidth}
+\makebox[\linewidth]{\href{run:QC/dendogram.png}{\includegraphics[keepaspectratio=true, scale=0.5]{QC/dendogram.png}}}
+\captionof{figure}{}
+\label{fig:f4}
+\end{minipage}
+\\\\\\
+\begin{minipage}{\linewidth}
+\makebox[\linewidth]{\href{run:QC/mds.png}{\includegraphics[keepaspectratio=true, scale=0.43]{QC/mds.png}}}
+\captionof{figure}{}
+\label{fig:f5}
+\end{minipage}
+\\\\
+\begin{minipage}{\linewidth}
+\makebox[\linewidth]{\href{run:QC/scatterplot.png}{\includegraphics[keepaspectratio=true, scale=0.43]{QC/scatterplot.png}}}
+\captionof{figure}{}
+\label{fig:f6}
+\end{minipage}
+\pagebreak
+
+
+%\bibliographystyle{plain}
+%\bibliography{references}
+
+
+\end{document}
